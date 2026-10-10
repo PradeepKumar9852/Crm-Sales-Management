@@ -5,18 +5,20 @@ A production-grade, enterprise-ready RESTful backend built with **Node.js**, **E
 
 ---
 
-##  Table of Contents
-1. [Project Overview](#-project-overview)
-2. [Technologies Used](#-technologies-used)
-3. [Architecture & Folder Structure](#-architecture--folder-structure)
-4. [User Roles & Permissions (RBAC)](#-user-roles--permissions-rbac)
-5. [Enterprise Business Rules](#-enterprise-business-rules)
-6. [Database Design & Indexing Decisions](#-database-design--indexing-decisions)
-7. [Installation & Setup](#-installation--setup)
-8. [Environment Variables](#-environment-variables)
-9. [How to Run the Server & Tests](#-how-to-run-the-server--tests)
-10. [API Documentation & Postman Collection](#-api-documentation--postman-collection)
-11. [Assumptions Made](#-assumptions-made)
+## 📑 Table of Contents
+1. [Project Overview](#-1-project-overview)
+2. [Technologies Used](#-2-technologies-used)
+3. [Architecture & Folder Structure](#-3-architecture--folder-structure)
+4. [User Roles & Permissions (RBAC)](#-4-user-roles--permissions-rbac)
+5. [Enterprise Business Rules](#-5-enterprise-business-rules)
+6. [Database Design & Indexing Decisions](#-6-database-design--indexing-decisions)
+7. [Installation & Setup](#-7-installation--setup)
+8. [Environment Variables](#-8-environment-variables)
+9. [How to Run the Server & Tests](#-9-how-to-run-the-server--tests)
+10. [API Documentation & Postman Collection](#-10-api-documentation-swagger--postman)
+11. [Sample API Requests & Responses](#-11-sample-api-requests--responses)
+12. [Assumptions Made](#-12-assumptions-made)
+13. [Deployment Information](#-13-deployment-information)
 
 ---
 
@@ -331,11 +333,326 @@ Import the included file: [`crm_postman_collection.json`](file:///c:/Users/barik
 
 ---
 
-##  11. Assumptions Made
+## 🚀 11. Sample API Requests & Responses
 
-1. **Role Mapping**: The system canonically defines `admin`, `sales_manager`, and `sales_executive` as per the specification, while gracefully supporting aliases (`manager`, `sales_rep`).
-2. **Sales Executive Scoping**: Sales executives are restricted to records assigned to them or created by them. Managers and Admins maintain organization-wide pipeline visibility.
+Below are representative API requests and responses showcasing standard formatting: `{ success: true, message: "...", data: {}, meta: {} }`.
+
+### 11.1 Authentication — User Login
+**Request:**
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@crm.local",
+  "password": "Admin@123"
+}
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "_id": "6735a123f890123456789abc",
+      "name": "System Administrator",
+      "email": "admin@crm.local",
+      "role": "admin",
+      "department": "Executive Management",
+      "isActive": true,
+      "createdAt": "2026-10-10T08:00:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
+
+---
+
+### 11.2 Lead Management — Create New Lead
+**Request:**
+```http
+POST /api/v1/leads
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "name": "Tech Corp Lead",
+  "email": "contact@techcorp.io",
+  "phone": "+1-555-0199",
+  "company": "Tech Corp Enterprises",
+  "source": "Website",
+  "status": "New",
+  "priority": "High",
+  "estimatedValue": 85000,
+  "description": "Enterprise cloud security modernization project."
+}
+```
+
+**Response (HTTP 201 Created):**
+```json
+{
+  "success": true,
+  "message": "Lead created successfully",
+  "data": {
+    "_id": "6735b456f890123456789def",
+    "name": "Tech Corp Lead",
+    "email": "contact@techcorp.io",
+    "phone": "+1-555-0199",
+    "company": "Tech Corp Enterprises",
+    "source": "Website",
+    "status": "New",
+    "priority": "High",
+    "estimatedValue": 85000,
+    "isConverted": false,
+    "createdBy": "6735a123f890123456789abc",
+    "createdAt": "2026-10-10T09:15:00.000Z"
+  }
+}
+```
+
+---
+
+### 11.3 Lead Conversion — Atomic Conversion into Customer & Deal
+**Request:**
+```http
+POST /api/v1/leads/6735b456f890123456789def/convert
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "createDeal": true,
+  "dealName": "Tech Corp - Cloud Modernization Contract",
+  "dealValue": 85000,
+  "expectedClosingDate": "2026-12-15T00:00:00.000Z"
+}
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Lead converted successfully into customer and deal",
+  "data": {
+    "customer": {
+      "_id": "6735c789f890123456789111",
+      "name": "Tech Corp Lead",
+      "email": "contact@techcorp.io",
+      "company": "Tech Corp Enterprises",
+      "lead": "6735b456f890123456789def",
+      "status": "Active"
+    },
+    "deal": {
+      "_id": "6735d901f890123456789222",
+      "dealName": "Tech Corp - Cloud Modernization Contract",
+      "dealValue": 85000,
+      "currentStage": "Qualification",
+      "probability": 10,
+      "expectedRevenue": 8500,
+      "expectedClosingDate": "2026-12-15T00:00:00.000Z",
+      "customer": "6735c789f890123456789111",
+      "lead": "6735b456f890123456789def"
+    }
+  }
+}
+```
+
+---
+
+### 11.4 Deal Pipeline — Stage Transition to Won
+**Request:**
+```http
+PATCH /api/v1/deals/6735d901f890123456789222/stage
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "stage": "Won"
+}
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Deal stage updated successfully",
+  "data": {
+    "_id": "6735d901f890123456789222",
+    "dealName": "Tech Corp - Cloud Modernization Contract",
+    "dealValue": 85000,
+    "currentStage": "Won",
+    "probability": 100,
+    "expectedRevenue": 85000,
+    "actualClosingDate": "2026-10-10T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+### 11.5 Sales Activity — Schedule Meeting & Dynamic Overdue State
+**Request:**
+```http
+POST /api/v1/activities
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "type": "Meeting",
+  "title": "Quarterly Technical Architecture Review",
+  "entityType": "Deal",
+  "entityId": "6735d901f890123456789222",
+  "dueDate": "2026-11-20T14:00:00.000Z",
+  "durationMinutes": 60,
+  "description": "Review final security integration guidelines."
+}
+```
+
+**Response (HTTP 201 Created):**
+```json
+{
+  "success": true,
+  "message": "Activity created successfully",
+  "data": {
+    "_id": "6735e123f890123456789333",
+    "type": "Meeting",
+    "title": "Quarterly Technical Architecture Review",
+    "status": "Pending",
+    "isOverdue": false,
+    "dueDate": "2026-11-20T14:00:00.000Z",
+    "entityType": "Deal",
+    "entityId": "6735d901f890123456789222",
+    "createdAt": "2026-10-10T10:35:00.000Z"
+  }
+}
+```
+
+---
+
+### 11.6 Audit Timeline — Chronological History
+**Request:**
+```http
+GET /api/v1/timeline/Lead/6735b456f890123456789def
+Authorization: Bearer <TOKEN>
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Timeline retrieved successfully",
+  "data": [
+    {
+      "_id": "6735f999f890123456789444",
+      "action": "Lead converted",
+      "entityType": "Lead",
+      "entityId": "6735b456f890123456789def",
+      "performedBy": {
+        "_id": "6735a123f890123456789abc",
+        "name": "System Administrator",
+        "email": "admin@crm.local"
+      },
+      "previousValue": null,
+      "newValue": {
+        "customerId": "6735c789f890123456789111",
+        "dealId": "6735d901f890123456789222"
+      },
+      "createdAt": "2026-10-10T09:45:00.000Z"
+    },
+    {
+      "_id": "6735f888f890123456789555",
+      "action": "Lead status changed",
+      "entityType": "Lead",
+      "entityId": "6735b456f890123456789def",
+      "previousValue": "New",
+      "newValue": "Qualified",
+      "createdAt": "2026-10-10T09:30:00.000Z"
+    },
+    {
+      "_id": "6735f777f890123456789666",
+      "action": "Lead created",
+      "entityType": "Lead",
+      "entityId": "6735b456f890123456789def",
+      "createdAt": "2026-10-10T09:15:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### 11.7 Dashboard & KPIs — Real-time Metrics
+**Request:**
+```http
+GET /api/v1/dashboard
+Authorization: Bearer <TOKEN>
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "success": true,
+  "message": "Dashboard metrics retrieved successfully",
+  "data": {
+    "totalLeads": 42,
+    "newLeads": 12,
+    "qualifiedLeads": 15,
+    "convertedLeads": 15,
+    "totalCustomers": 15,
+    "totalDeals": 18,
+    "openDeals": 12,
+    "wonDeals": 5,
+    "lostDeals": 1,
+    "totalRevenue": 425000,
+    "totalPipelineValue": 1250000,
+    "expectedRevenue": 612500,
+    "conversionRate": "35.7%",
+    "pendingActivities": 24,
+    "overdueActivities": 3,
+    "pipeline": [
+      { "stage": "Qualification", "count": 4, "totalValue": 250000 },
+      { "stage": "Discovery", "count": 3, "totalValue": 180000 },
+      { "stage": "Proposal", "count": 3, "totalValue": 240000 },
+      { "stage": "Negotiation", "count": 2, "totalValue": 155000 },
+      { "stage": "Won", "count": 5, "totalValue": 425000 },
+      { "stage": "Lost", "count": 1, "totalValue": 50000 }
+    ]
+  }
+}
+```
+
+---
+
+## 📌 12. Assumptions Made
+
+1. **Role Mapping & Aliasing**: The system canonically defines `admin`, `sales_manager`, and `sales_executive` as per the specification, while gracefully supporting backward-compatible aliases (`manager`, `sales_rep`).
+2. **Sales Executive Scoping**: Sales executives are restricted to viewing and managing records assigned to them or created by them. Managers and Admins maintain organization-wide pipeline visibility.
 3. **Pipeline Stages**: The canonical 6 stages defined are: `Qualification`, `Discovery`, `Proposal`, `Negotiation`, `Won`, and `Lost`.
-4. **Lead Conversion**: When a lead is converted, the customer record retains the `lead` ID reference, and the newly created deal references both the `customer` and `lead` IDs to maintain complete traceability.
-5. **Audit Trail**: Key system transitions automatically create non-blocking audit records in the `timelines` collection to ensure high query performance while preserving full history.
+4. **Lead Conversion**: When a lead is converted, the customer record retains the `lead` ID reference, and the newly created deal references both the `customer` and `lead` IDs to maintain complete end-to-end traceability.
+5. **Audit Trail**: Key system transitions automatically create non-blocking audit records in the `timelines` collection with before/after state diffs to ensure high query performance while preserving full history.
 6. **Token Blacklist**: Logout leverages an auto-expiring MongoDB TTL index on the `tokenblacklists` collection matching the remaining token lifetime.
+
+---
+
+## 🌐 13. Deployment Information
+
+### Production Deployment Instructions
+This application is completely container-ready and cloud-native:
+1. **Host on Render / Railway / Heroku / AWS EC2**:
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+2. **MongoDB Atlas Connection**:
+   - Set `MONGO_URI` environment variable with MongoDB Atlas connection string.
+   - Set `JWT_SECRET` with a secure random key.
+   - Set `NODE_ENV=production`.
+3. **Live Deployed API Link**:
+   - **Base URL**: `https://crm-sales-management-production.up.railway.app` (or your cloud platform URL)
+   - **Swagger Docs**: `https://crm-sales-management-production.up.railway.app/api/v1/docs`
+   - **Health Check**: `https://crm-sales-management-production.up.railway.app/api/v1/health`
+
+### Postman & Database Design Links:
+- Postman Collection: [`crm_postman_collection.json`](file:///c:/Users/barik/crm-sales-management/crm_postman_collection.json)
+- MongoDB Schema Architecture: [`DATABASE_DESIGN.md`](file:///c:/Users/barik/crm-sales-management/DATABASE_DESIGN.md)
+
