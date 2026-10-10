@@ -15,7 +15,7 @@ A production-grade, enterprise-ready RESTful backend built with **Node.js**, **E
 7. [Installation & Setup](#-7-installation--setup)
 8. [Environment Variables](#-8-environment-variables)
 9. [How to Run the Server & Tests](#-9-how-to-run-the-server--tests)
-10. [API Documentation & Postman Collection](#-10-api-documentation-swagger--postman)
+10. [Interactive API Documentation (Swagger / OpenAPI)](#-10-interactive-api-documentation-swagger--openapi)
 11. [Sample API Requests & Responses](#-11-sample-api-requests--responses)
 12. [Assumptions Made](#-12-assumptions-made)
 13. [Deployment Information](#-13-deployment-information)
@@ -52,7 +52,7 @@ crm-sales-management/
 ├── .env                              # Active configuration
 ├── .env.example                      # Production template
 ├── app.js                            # Express app configuration & middlewares
-├── crm_postman_collection.json       # Ready-to-import Postman Collection v2.1
+├── DATABASE_DESIGN.md                # MongoDB ER architecture & indexing specs
 ├── package.json                      # Project dependencies & scripts
 ├── README.md                         # Project documentation
 ├── test_crm.js                       # Automated E2E integration test suite
@@ -250,15 +250,18 @@ The test suite executes 10 comprehensive suites verifying:
 
 ---
 
-##  10. API Documentation (Swagger & Postman)
+## 🌐 10. Interactive API Documentation (Swagger / OpenAPI)
 
-### 🌐 Interactive Swagger / OpenAPI Documentation
-When the server is running, open your browser to test endpoints interactively:
-- **Swagger UI**: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs) or [http://localhost:5000/docs](http://localhost:5000/docs)
-- **Raw OpenAPI JSON**: [http://localhost:5000/api/v1/docs.json](http://localhost:5000/api/v1/docs.json)
+The application provides an interactive **Swagger UI** for testing all endpoints directly in your browser without requiring any third-party tools:
 
-###  Postman Collection
-Import the included file: [`crm_postman_collection.json`](file:///c:/Users/barik/crm-sales-management/crm_postman_collection.json) directly into Postman.
+- **Swagger UI Interface**: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs) or [http://localhost:5000/docs](http://localhost:5000/docs)
+- **OpenAPI 3.0 JSON Specification**: [http://localhost:5000/api/v1/docs.json](http://localhost:5000/api/v1/docs.json)
+
+### How to Authenticate in Swagger UI:
+1. Call `POST /api/v1/auth/login` (or `/register`) with your credentials in Swagger UI to receive your JWT token.
+2. Click the **Authorize 🔓** button at the top-right of Swagger UI.
+3. Paste your token formatted as: `Bearer <your_jwt_token>` (or just `<your_jwt_token>`).
+4. Click **Authorize** — all protected routes across Leads, Customers, Deals, Activities, Timeline, and Analytics are now unlocked for interactive testing!
 
 ### Core Endpoints Overview
 
@@ -652,7 +655,8 @@ This application is completely container-ready and cloud-native:
    - **Swagger Docs**: `https://crm-sales-management-production.up.railway.app/api/v1/docs`
    - **Health Check**: `https://crm-sales-management-production.up.railway.app/api/v1/health`
 
-### Postman & Database Design Links:
-- Postman Collection: [`crm_postman_collection.json`](file:///c:/Users/barik/crm-sales-management/crm_postman_collection.json)
+### Architecture & Documentation Links:
+- Interactive Swagger UI: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs)
 - MongoDB Schema Architecture: [`DATABASE_DESIGN.md`](file:///c:/Users/barik/crm-sales-management/DATABASE_DESIGN.md)
+
 
