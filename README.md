@@ -5,7 +5,7 @@ A production-grade, enterprise-ready RESTful backend built with **Node.js**, **E
 
 ---
 
-## 📑 Table of Contents
+##  Table of Contents
 1. [Project Overview](#-1-project-overview)
 2. [Technologies Used](#-2-technologies-used)
 3. [Architecture & Folder Structure](#-3-architecture--folder-structure)
@@ -18,7 +18,6 @@ A production-grade, enterprise-ready RESTful backend built with **Node.js**, **E
 10. [Interactive API Documentation (Swagger / OpenAPI)](#-10-interactive-api-documentation-swagger--openapi)
 11. [Sample API Requests & Responses](#-11-sample-api-requests--responses)
 12. [Assumptions Made](#-12-assumptions-made)
-13. [Deployment Information](#-13-deployment-information)
 
 ---
 
@@ -51,14 +50,17 @@ This backend manages the end-to-end sales pipeline of an enterprise CRM:
 crm-sales-management/
 ├── .env                              # Active configuration
 ├── .env.example                      # Production template
-├── app.js                            # Express app configuration & middlewares
 ├── DATABASE_DESIGN.md                # MongoDB ER architecture & indexing specs
 ├── package.json                      # Project dependencies & scripts
 ├── README.md                         # Project documentation
+├── seed.js                           # Seed script with default credentials
 ├── test_crm.js                       # Automated E2E integration test suite
 └── src/
+    ├── app.js                        # Express app configuration & middlewares
+    ├── server.js                     # HTTP server startup & graceful shutdown
     ├── config/
-    │   └── db.js                     # MongoDB connection with retry & graceful shutdown
+    │   ├── db.js                     # MongoDB connection with retry & graceful shutdown
+    │   └── env.js                    # Strict environment validation
     ├── constants/
     │   └── roles.js                  # Roles, stages, sources, and timeline enums
     ├── controllers/
@@ -250,9 +252,9 @@ The test suite executes 10 comprehensive suites verifying:
 
 ---
 
-## 🌐 10. Interactive API Documentation (Swagger / OpenAPI)
+## 🌐 10. Interactive API Documentation (Swagger UI)
 
-The application provides an interactive **Swagger UI** for testing all endpoints directly in your browser without requiring any third-party tools:
+The application provides a fully interactive **Swagger UI** for testing all endpoints directly in your browser:
 
 - **Swagger UI Interface**: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs) or [http://localhost:5000/docs](http://localhost:5000/docs)
 - **OpenAPI 3.0 JSON Specification**: [http://localhost:5000/api/v1/docs.json](http://localhost:5000/api/v1/docs.json)
@@ -628,7 +630,7 @@ Authorization: Bearer <TOKEN>
 
 ---
 
-## 📌 12. Assumptions Made
+##  12. Assumptions Made
 
 1. **Role Mapping & Aliasing**: The system canonically defines `admin`, `sales_manager`, and `sales_executive` as per the specification, while gracefully supporting backward-compatible aliases (`manager`, `sales_rep`).
 2. **Sales Executive Scoping**: Sales executives are restricted to viewing and managing records assigned to them or created by them. Managers and Admins maintain organization-wide pipeline visibility.
@@ -639,24 +641,8 @@ Authorization: Bearer <TOKEN>
 
 ---
 
-## 🌐 13. Deployment Information
-
-### Production Deployment Instructions
-This application is completely container-ready and cloud-native:
-1. **Host on Render / Railway / Heroku / AWS EC2**:
-   - Build Command: `npm install`
-   - Start Command: `node server.js`
-2. **MongoDB Atlas Connection**:
-   - Set `MONGO_URI` environment variable with MongoDB Atlas connection string.
-   - Set `JWT_SECRET` with a secure random key.
-   - Set `NODE_ENV=production`.
-3. **Live Deployed API Link**:
-   - **Base URL**: `https://crm-sales-management-production.up.railway.app` (or your cloud platform URL)
-   - **Swagger Docs**: `https://crm-sales-management-production.up.railway.app/api/v1/docs`
-   - **Health Check**: `https://crm-sales-management-production.up.railway.app/api/v1/health`
-
-### Architecture & Documentation Links:
-- Interactive Swagger UI: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs)
-- MongoDB Schema Architecture: [`DATABASE_DESIGN.md`](file:///c:/Users/barik/crm-sales-management/DATABASE_DESIGN.md)
+### Quick Links:
+- **Interactive Swagger UI**: [http://localhost:5000/api/v1/docs](http://localhost:5000/api/v1/docs)
+- **Database Design Guide**: [`DATABASE_DESIGN.md`](file:///c:/Users/barik/crm-sales-management/DATABASE_DESIGN.md)
 
 

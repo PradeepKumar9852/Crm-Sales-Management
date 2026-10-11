@@ -2,15 +2,15 @@
   "name": "crm-sales-management",
   "version": "1.0.0",
   "description": "Enterprise B2B CRM Sales Management RESTful Backend with RBAC and Full Sales Cycle Lifecycle",
-  "main": "server.js",
+  "main": "src/server.js",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
     "test": "node test_crm.js",
     "seed": "node seed.js",
-    "dev": "npx nodemon server.js",
-    "start": "node server.js"
+    "dev": "npx nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "",

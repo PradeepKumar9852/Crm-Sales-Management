@@ -1,27 +1,28 @@
 require('dotenv').config();
 const app = require('./app');
-const connectDB = require('./src/config/db');
+const connectDB = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    // 1. Connect to MongoDB
+    // 1. Establish database connection
     await connectDB();
 
-    // 2. Start HTTP listener
+    // 2. Start HTTP server listener
     const server = app.listen(PORT, () => {
       console.log('=========================================');
-      console.log(' CRM Sales Management Server Running ');
-      console.log(` Port: ${PORT}`);
-      console.log(` Mode: ${process.env.NODE_ENV || 'development'}`);
+      console.log(' CRM Sales Management Backend Running');
+      console.log(` Port:     ${PORT}`);
+      console.log(` Mode:     ${process.env.NODE_ENV || 'development'}`);
       console.log(` Base API: http://localhost:${PORT}/api/v1`);
+      console.log(` Docs:     http://localhost:${PORT}/api/v1/docs`);
       console.log('=========================================');
     });
 
-    // 3. Handle unhandled promise rejections
+    // 3. Graceful shutdown on unhandled rejections
     process.on('unhandledRejection', (err) => {
-      console.error('UNHANDLED REJECTION! Shutting down gracefully...', err);
+      console.error('Unhandled promise rejection. Shutting down gracefully...', err);
       server.close(() => {
         process.exit(1);
       });
@@ -29,14 +30,14 @@ async function startServer() {
 
     return server;
   } catch (error) {
-    console.error('Server failed to start:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
-// Handle uncaught exceptions
+// Catch unexpected exceptions
 process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION! Shutting down...', err);
+  console.error('Uncaught exception detected:', err);
   process.exit(1);
 });
 
